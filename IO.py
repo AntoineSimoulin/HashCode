@@ -1,5 +1,4 @@
-from Utilities import *
-
+from utils import *
 
 def write_solution(filepath, videos_on_cache):
     used_caches = 0
@@ -15,7 +14,6 @@ def write_solution(filepath, videos_on_cache):
                 out = str(idx) + " " + " ".join(str(i) for i in c)
                 f.write(out)
                 f.write('\n')
-
 
 def read_dataset(fpath):
     with open(fpath, 'r') as reader:
