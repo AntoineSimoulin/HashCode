@@ -1,5 +1,5 @@
-# import circuit
-# import @
+from tqdm import tqdm
+import numpy as np
 
 class Solution():
     def __init__(self, inst):
@@ -22,7 +22,7 @@ class Solution():
         score = 0.0
         total_req = 0
 
-        for req in tqdm(requests, desc="Computing score"):
+        for req in tqdm(self.inst.requests, desc="Computing score"):
             # find caches that are connected to eid and have vid
             _lats = [self.inst.endpoints[req.eid].lat]
 
