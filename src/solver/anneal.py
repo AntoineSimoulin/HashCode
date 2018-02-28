@@ -1,8 +1,9 @@
-import circuit
-import random
-import solution
-import copy
-import math
+# import circuit
+# import random
+# import solution
+# import copy
+# import math
+from inout.solution import *
 
 # Recuit simulé
 # Paramètres :
@@ -32,12 +33,12 @@ import math
 # end
 # return solution;
 
-class simulated_annealing(inst):
+class simulated_annealing():
     """
     return a solution from the solution class
     """
 
-    def __init__(inst):
+    def __init__(self, inst):
         self.inst = inst
 
     def stupid_solver(self):
@@ -47,17 +48,18 @@ class simulated_annealing(inst):
         ces derniers soient pleins.
         """
         wanted_videos = {}
-        for in _ri, _r in enumerate(self.inst.requests):
+        for _ri, _r in enumerate(self.inst.requests):
             wanted_videos[_r.vid] = wanted_videos.get(_r.vid,0) + _r.n
+        wanted_videos = sorted(wanted_videos, key=wanted_videos.get, reverse=True)
 
-        sol = solution.Solution(self.inst)
-        for _ci, _c in enumerate(self.inst.n_cache):
+        sol = Solution(self.inst)
+        for _ci in range(self.inst.n_cache):
             sol.videos_on_cache.append([])
             v_size = 0
-            for wv_id, wv_size in wanted_videos.items():
-                v_size+=wv_size
-                if v_size<self.inst.s_cache:
-                    sol.videos_on_cache[_ci].append([wv_id])
+            for v in wanted_videos:
+                v_size+=self.inst.s_videos[v]
+                if v_size < self.inst.s_cache:
+                    sol.videos_on_cache[_ci].append(v)
         return sol
 
     # def apply_one_greedy(inst):

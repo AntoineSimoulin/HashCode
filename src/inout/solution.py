@@ -6,6 +6,12 @@ class Solution():
         self.inst = inst
         self.name = inst.name
         self.videos_on_cache = []
+        self.score = compute_solution_scores()
+
+    def voisinage():
+        """
+        mutate solution given voisinage and update score
+        """
 
     def is_valid(self):
         """
