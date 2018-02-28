@@ -1,26 +1,46 @@
 from tqdm import tqdm
 import numpy as np
+import random
 
 class Solution():
     def __init__(self, inst):
         self.inst = inst
         self.name = inst.name
         self.videos_on_cache = []
-        self.score = compute_solution_scores()
+        self.score = 0 # compute_solution_scores()
 
-    def voisinage():
+    def mutate_a():
         """
-        mutate solution given voisinage and update score
+        mutate solution given voisinage a :
+        remove a random video from the cache. Consider all video from the data
+        center that fit in the cache and insert it. If no video fit, a new
+        random video is taken out of the cache.
+        Update score and videos on cache
         """
+        i = randrange(self.inst.n_cache) # get random cache
+        j = random.randrange(len(self.videos_on_cache[i])) # get random video index in cache
+        self.videos_on_cache[i], self.videos_on_cache[-1] = self.videos_on_cache[-1], self.videos_on_cache[j]    # swap with the last element
+        self.videos_on_cache = self.videos_on_cache.pop()  # pop last element
+
+        # check available videos
+        v_size = [v for _vi, _v in enumerate(inst.s_videos) if _vi in self.videos_on_cache[i]]
+        v_size_tot = sum(v_size)
+        possible_v = [v for k,v in enumerate(inst.s_videos) if k <= (v_size_tot-self.inst.s_cache)]
+        choosen_v = random.choice(possible_v)
+
+        # update solution and scores
+        self.videos_on_cache.append(choosen_v)
+        self.score = compute_solution_score()
+
 
     def is_valid(self):
         """
         check total video size in each cache does not exceed limits
         """
         for _ci, _c in enumerate(self.videos_on_cache):
-            v_size = [v for _vi, _v in enumerate(inst.s_videos) if _vi in inst.s_videos]
+            v_size = [v for _vi, _v in enumerate(inst.s_videos) if _vi in _ci]
             v_size_tot = sum(v_size)
-            if _c.s_cache < v_size_tots:
+            if _c.s_cache < v_size_tot:
                 return False
         return True
 
