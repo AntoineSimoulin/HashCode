@@ -1,31 +1,31 @@
-import circuit
-import random
+# import circuit
+# import @
 
 class Solution():
     def __init__(self, inst):
         self.inst = inst
         self.name = inst.name
 
-        self.circuits = []
-        self.remorques = inst.remorques
+        # self.circuits = []
+        # self.remorques = inst.remorques
 
-        self.length = 9999999
-        self.desequilibre = 9999999
+        # self.length = 9999999
+        # self.desequilibre = 9999999
 
+    # def update(self):
+    #     self.length = sum([self.circuits[i].length for i in xrange(len(self.circuits))])
+    #     self.desequilibre = sum([self.circuits[i].desequilibre for i in xrange(len(self.circuits))])
 
-    def update(self):
-        self.length = sum([self.circuits[i].length for i in xrange(len(self.circuits))])
-        self.desequilibre = sum([self.circuits[i].desequilibre for i in xrange(len(self.circuits))])
-
-
-    def is_valid(self):
-        validity = True
-        for c in self.circuits:
-            if len(c.stations) == 0:
-                validity = False
-        if len(self.circuits) == 0:
-            validity = False
-        return validity
+    def is_valid(self, videos_on_cache):
+        """
+        check total video size in each cache does not exceed limits
+        """
+        for _ci, _c in enumerate(videos_on_cache):
+            v_size = [v for _vi, _v in enumerate(inst.s_videos) if _vi in inst.s_videos]
+            v_size_tot = sum(v_size)
+            if _c.s_cache < v_size_tots:
+                return False
+        return True
 
     def compute_solution_score(videos_on_cache, requests, endpoints):
         score = 0.0
@@ -51,16 +51,6 @@ class Solution():
 
         return np.floor(score * 1000.0 / total_req)
 
-    def to_file(self, filename):
-        f = open(filename, 'w')
-        f.write('# générée le : TODO\n\n')
-        f.write('nom '+self.name+'\n')
-        f.write('desequilibre '+str(self.desequilibre)+'\n')
-        f.write('distance '+str(self.length)+'\n\n')
-        for c in self.circuits:
-            f.write(c.to_string())
-        f.close()
-
     def write_solution(filepath, videos_on_cache):
         used_caches = 0
         for cache in videos_on_cache:
@@ -75,20 +65,3 @@ class Solution():
                     out = str(idx) + " " + " ".join(str(i) for i in c)
                     f.write(out)
                     f.write('\n')
-
-    def to_string_long(self):
-        print '# générée le : TODO\n\n'
-        print 'nom '+self.name+'\n'
-        print 'desequilibre '+str(self.desequilibre)+'\n'
-        print 'distance '+str(self.length)+'\n\n'
-        for c in self.circuits:
-            print c.to_string()
-
-    def to_string(self):
-        print 'desequilibre '+str(self.desequilibre)+'\n'
-        print 'distance '+str(self.length)+'\n\n'
-
-    def best_voisinage(self):
-        for j in xrange(len(self.remorques)):
-            self.circuits[j].mutate_2opt_best()
-        self.update()

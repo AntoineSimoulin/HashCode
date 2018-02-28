@@ -7,9 +7,10 @@ Request = namedtuple('Request', ['vid', 'eid', 'n'])
 Scoring = namedtuple('Scoring', ['vid', 'cid', 'score'])
 
 class Instance():
-    def __init__(self, fpath):
+    def __init__(self, fpath, name='instance'):
         self.fpath = fpath
         self.read_dataset()
+        self.name = name
 
     def read_dataset(self):
         with open(self.fpath, 'r') as f:
@@ -47,4 +48,4 @@ class Instance():
     #     return "n_vid : %i" %self.n_vid
 
     def __str__(self):
-        return "Instance : \nn_vid : %i\nn_end : %i\nn_req : %i\nn_cache : %i\ns_cache : %i" %(self.n_vid, self.n_end, self.n_req, self.n_cache, self.s_cache)
+        return "Instance name : %s \nn_vid : %i\nn_end : %i\nn_req : %i\nn_cache : %i\ns_cache : %i" %(self.name, self.n_vid, self.n_end, self.n_req, self.n_cache, self.s_cache)

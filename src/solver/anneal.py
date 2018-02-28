@@ -1,3 +1,164 @@
+import circuit
+import random
+import solution
+import copy
+import math
+
+# Recuit simulé
+# Paramètres :
+#  - Instance,
+#  - nombre d’itération Iter_max = 100,
+#  - température initiale T0 = 50,
+#  - température finale T f = 3,
+#  - coefficient µ = 0.7
+# Result: solution
+#
+# algorithm de résolution
+# sol = apply_one_greedy(inst);
+# T = T0;
+# while T > T f do
+#   forall i = 1 . . . n do
+#       sol_temp := copy(sol);
+#       sol_temp := best_voisinage(sol_temp);
+#       ∆f := sol.desequilibre − sol_temp.desequilibre;
+#       if ∆f > 0 then
+#           p := random.uniform(0, 1);
+#           if p < exp(-∆fT) then
+#             sol := sol_temp;
+#           end
+#       end
+#       T∗ = µ;
+#   end
+# end
+# return solution;
+
+class simulated_annealing(inst):
+    """
+    return a solution from the solution class
+    """
+
+    def __init__(inst):
+        self.inst = inst
+
+    def stupid_solver(inst):
+        """
+        Brique de 'descente' mono circuit efficace :
+        principe: On prend les stations dans l'ordre de l'instance,
+        puis on les affecte à chaque remorque à tour de rôle
+        """
+        stations = inst.stations
+        remorques = inst.remorques
+        affectations = {}
+        rid = 1
+        for s in stations: # On prend les stations dans l'ordre de l'instance
+            # on les affecte à chaque remorque à tour de rôle
+            if rid not in affectations:
+                affectations[rid] = [s]
+            else:
+                affectations[rid].append(s)
+            if rid + 1 <= len(remorques):
+                rid += 1
+            else:
+                rid = 1
+        # On équilibre les stations selons les affectations
+        sol = solution.Solution(inst)
+        for r in remorques:
+            c = circuit.Circuit(r)
+            c.equilibrage(affectations[r.id])
+            sol.circuits.append(c)
+        sol.update()
+        return sol
+
+    def apply_one_greedy(inst):
+        sol = solution.Solution(inst)
+        stations = random.sample(inst.stations, len(inst.stations))  # On mélange les stations
+        remorques = inst.remorques
+        affectations = {}
+        for r in remorques :
+            affectations[r] = []
+
+        while not sol.is_valid():
+            for s in stations:  # On prend les stations
+                r = random.choice(remorques)  # On choisit une remorque au hasard
+                affectations[r].append(s) # On affecte la station à la remorque
+
+            # On équilibre les stations selons les affectations
+            for r in remorques:
+                c = circuit.Circuit(r)
+                if len(affectations[r]) > 0:
+                    c.equilibrage(affectations[r])
+                sol.circuits.append(c)
+        sol.update()
+        return sol
+
+
+    def carlo_solver(inst, n):
+        sol = solution.Solution(inst)
+
+        for i in xrange(n):
+            sol_temp = apply_one_greedy(inst)
+            if sol_temp.desequilibre < sol.desequilibre or (sol_temp.desequilibre == sol.desequilibre and sol_temp.length < sol.length):
+                sol = sol_temp
+        return sol
+
+    def steepest_2opt_solver_stupid(inst):
+        remorques = inst.remorques
+        sol = stupid_solver(inst)
+        for r in xrange(len(remorques)):
+            print 'remorque :', r
+            sol.circuits[r].mutate_2opt_steepest()
+            print '-------------------'
+        sol.update()
+        return sol
+
+    def steepest_2opt_solver(inst, n):
+        sol = solution.Solution(inst)
+        remorques = inst.remorques
+        for i in xrange(n):
+            sol_temp = apply_one_greedy(inst)
+            for r in xrange(len(remorques)) :
+                sol_temp.circuits[r].mutate_2opt_steepest()
+            sol_temp.update()
+
+            if (sol_temp.desequilibre < sol.desequilibre) or (sol_temp.desequilibre == sol.desequilibre and sol_temp.length < sol.length):
+                sol = sol_temp
+
+        return sol
+
+    def descent_solver(inst, explore=False, n=0):
+        sol = apply_one_greedy(inst)  # on génere une solution initiale sol
+        amelioration = False
+        if not explore:  # Sans l'option explore, T=0: on n'accepte que les voisins améliorants
+            while amelioration:
+                sol_temp = copy.deepcopy(sol)
+                sol_temp.best_voisinage()
+
+                if (sol_temp.desequilibre < sol.desequilibre) or (sol_temp.desequilibre == sol.desequilibre and sol_temp.length < sol.length):
+                    sol = sol_temp
+                    amelioration = True
+        if explore:  # Avec l'option explore, T=infini: on accepte tous les voisins
+            for i in xrange(n):
+                sol.best_voisinage()
+        return sol
+
+
+    def recuit_solver(inst, n=100, T0=50, Tf=3, mu=0.7):
+        sol = apply_one_greedy(inst)
+        T = float(T0)
+        while T > Tf:
+            for i in xrange(n):
+                sol_temp = copy.deepcopy(sol)
+                sol_temp.best_voisinage()
+                deltaf = float(sol.desequilibre - sol_temp.desequilibre)
+                if deltaf > 0:
+                    p = random.uniform(0, 1)
+                    if p < math.exp(-deltaf/T):
+                        sol = sol_temp
+            T *= mu
+            # print T
+        return sol
+
+
 #!/usr/bin/env python
 # Python module for simulated annealing - anneal.py - v1.0 - 2 Sep 2009
 #
