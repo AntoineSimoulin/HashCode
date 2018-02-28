@@ -7,9 +7,9 @@ class Solution():
         self.inst = inst
         self.name = inst.name
         self.videos_on_cache = []
-        self.score = 0 # compute_solution_scores()
+        self.score = 0 # self.compute_solution_score()
 
-    def mutate_a():
+    def mutate_a(self):
         """
         mutate solution given voisinage a :
         remove a random video from the cache. Consider all video from the data
@@ -17,20 +17,21 @@ class Solution():
         random video is taken out of the cache.
         Update score and videos on cache
         """
-        i = randrange(self.inst.n_cache) # get random cache
+        i = random.randrange(self.inst.n_cache) # get random cache
         j = random.randrange(len(self.videos_on_cache[i])) # get random video index in cache
-        self.videos_on_cache[i], self.videos_on_cache[-1] = self.videos_on_cache[-1], self.videos_on_cache[j]    # swap with the last element
-        self.videos_on_cache = self.videos_on_cache.pop()  # pop last element
+        self.videos_on_cache[i][j], self.videos_on_cache[i][-1] = self.videos_on_cache[i][-1], self.videos_on_cache[i][j] # swap with the last element
+        self.videos_on_cache[i] = self.videos_on_cache[i][:-1]  # remove last element
+
 
         # check available videos
-        v_size = [v for _vi, _v in enumerate(inst.s_videos) if _vi in self.videos_on_cache[i]]
+        v_size = [v for vi,v in enumerate(self.inst.s_videos) if vi in self.videos_on_cache[i]]
         v_size_tot = sum(v_size)
-        possible_v = [v for k,v in enumerate(inst.s_videos) if k <= (v_size_tot-self.inst.s_cache)]
+        possible_v = [v for k,v in enumerate(self.inst.s_videos) if k <= (self.inst.s_cache-v_size_tot)]
         choosen_v = random.choice(possible_v)
 
         # update solution and scores
-        self.videos_on_cache.append(choosen_v)
-        self.score = compute_solution_score()
+        self.videos_on_cache[i].append(choosen_v)
+        self.compute_solution_score()
 
 
     def is_valid(self):
@@ -66,7 +67,7 @@ class Solution():
             score += saved_lad
             total_req += req.n
 
-        return np.floor(score * 1000.0 / total_req)
+        self.score = np.floor(score * 1000.0 / total_req)
 
     def write_solution(self, filepath):
         used_caches = 0

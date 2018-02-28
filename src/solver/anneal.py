@@ -4,6 +4,7 @@
 # import copy
 # import math
 from inout.solution import *
+import copy
 
 # Recuit simulé
 # Paramètres :
@@ -41,33 +42,35 @@ class simulated_annealing():
     def __init__(self, inst):
         self.inst = inst
 
-    def apply_one_greedy(inst):
-        """
-        Greedy solution algorithm with random initialization
-        """
-        sol = solution.Solution(inst)
-        stations = random.sample(inst.stations, len(inst.stations))  # On mélange les stations
-        remorques = inst.remorques
-        affectations = {}
-        for r in remorques :
-            affectations[r] = []
-
-        while not sol.is_valid():
-            for s in stations:  # On prend les stations
-                r = random.choice(remorques)  # On choisit une remorque au hasard
-                affectations[r].append(s) # On affecte la station à la remorque
-
-            # On équilibre les stations selons les affectations
-            for r in remorques:
-                c = circuit.Circuit(r)
-                if len(affectations[r]) > 0:
-                    c.equilibrage(affectations[r])
-                sol.circuits.append(c)
-        sol.update()
-        return sol
+    # def apply_one_greedy(inst):
+    #     """
+    #
+    #
+    #     """
+    #     sol = solution.Solution(inst)
+    #     stations = random.sample(inst.stations, len(inst.stations))  # On mélange les stations
+    #     remorques = inst.remorques
+    #     affectations = {}
+    #     for r in remorques :
+    #         affectations[r] = []
+    #
+    #     while not sol.is_valid():
+    #         for s in stations:  # On prend les stations
+    #             r = random.choice(remorques)  # On choisit une remorque au hasard
+    #             affectations[r].append(s) # On affecte la station à la remorque
+    #
+    #         # On équilibre les stations selons les affectations
+    #         for r in remorques:
+    #             c = circuit.Circuit(r)
+    #             if len(affectations[r]) > 0:
+    #                 c.equilibrage(affectations[r])
+    #             sol.circuits.append(c)
+    #     sol.update()
+    #     return sol
 
     def stupid_solver(self):
         """
+        Greedy solution algorithm with random initialization
         principe : On prend les vidéos les plus demandées sur l'ensemble des
         endpoints et on les mets dans tous les caches jusqu'à ce que
         ces derniers soient pleins.
@@ -85,13 +88,14 @@ class simulated_annealing():
                 v_size+=self.inst.s_videos[v]
                 if v_size < self.inst.s_cache:
                     sol.videos_on_cache[_ci].append(v)
+        sol.compute_solution_score()
         return sol
 
-    def recuit_solver(n=100, T0=50, Tf=3, mu=0.7):
-        sol = apply_one_greedy(self.inst)
+    def recuit_solver(self, n=100, T0=50, Tf=3, mu=0.7):
+        sol = self.stupid_solver()
         T = float(T0)
         while T > Tf:
-            for i in xrange(n):
+            for i in range(n):
                 sol_temp = copy.deepcopy(sol)
                 sol_temp.mutate_a()
                 deltaf = float(sol.score - sol_temp.score)
@@ -99,6 +103,7 @@ class simulated_annealing():
                     p = random.uniform(0, 1)
                     if p < math.exp(-deltaf/T):
                         sol = sol_temp
+                print("T : %i, deltaf : %i, i : %i, score : %i"%(T, deltaf, i, sol.score))
             T *= mu
         return sol
 
