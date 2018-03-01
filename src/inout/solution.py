@@ -67,16 +67,10 @@ class Solution():
         self.score = score
 
     def write_solution(self, filepath):
-        used_caches = 0
-        for cache in self.videos_on_cache:
-            if len(cache):
-                used_caches += 1
-
+        # sort the traject solution
         with open(filepath, 'w') as f:
-            f.write(str(used_caches))
-            f.write('\n')
-            for idx, c in enumerate(self.videos_on_cache):
-                if len(c):
-                    out = str(idx) + " " + " ".join(str(i) for i in c)
+            for v, traj in self.trajets.items():
+                if len(traj):
+                    out = str(len(traj)) + " " + " ".join(str(t.id) for t in traj)
                     f.write(out)
                     f.write('\n')
