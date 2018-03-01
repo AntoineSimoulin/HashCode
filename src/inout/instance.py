@@ -1,4 +1,6 @@
 from collections import namedtuple
+from util import get_ride_length
+
 Ride = namedtuple('Ride', ['id', 'a', 'b', 'x', 'y', 's', 'f', 'done', 'length'])
 
 class Instance:
@@ -14,11 +16,7 @@ class Instance:
             self.rides = []
             for i in range(self.N):
                 a, b, x, y, s, f = [int(i) for i in dataset_file.readline().split(' ')]
-                self.rides.append(Ride(i, a, b, x, y, s, f, 0, self.get_ride_length(a, b, x, y)))
-
-    @staticmethod
-    def get_ride_length(a, b, x, y):
-        return abs(x-a) + abs(y - b)
+                self.rides.append(Ride(i, a, b, x, y, s, f, 0, get_ride_length(a, b, x, y)))
 
 
 if __name__ == "__main__":
