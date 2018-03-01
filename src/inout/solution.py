@@ -6,7 +6,7 @@ class Solution():
     def __init__(self, inst):
         self.inst = inst
         self.name = inst.name
-        self.videos_on_cache = []
+        self.trajets = []
         self.score = 0 # self.compute_solution_score()
 
     def mutate_a(self):
@@ -33,7 +33,7 @@ class Solution():
         self.videos_on_cache[i].append(choosen_v)
         self.compute_solution_score()
 
-    def is_valid(self):
+    def is_valid(self, rd1, rd2):
         """
         check total video size in each cache does not exceed limits
         """
@@ -44,27 +44,20 @@ class Solution():
                 return False
         return True
 
+    def get_traject_time():
+        
+
     def compute_solution_score(self):
         score = 0.0
-        total_req = 0
 
-        for req in tqdm(self.inst.requests, desc="Computing score"):
-            # find caches that are connected to eid and have vid
-            _lats = [self.inst.endpoints[req.eid].lat]
-
-            # check if video vid is on cache
-            for _ci, _c in enumerate(self.videos_on_cache):
-                if req.vid in _c:
-                    # check if endpoint eid is connected to cache
-                    for _cc in self.inst.endpoints[req.eid].con:
-                        if _ci == _cc[0]:
-                            _lats.append(_cc[1])
-
-            min_lat = np.min(_lats)
-            diff_lat = self.inst.endpoints[req.eid].lat - min_lat
-            saved_lad = req.n * diff_lat
-            score += saved_lad
-            total_req += req.n
+        for v_id, v_rides in self.trajets.items():
+            for r in rides:
+                # check if ride is valid
+                if self.is_valid(rd1, rd2):
+                    score += r.length
+                # check if bonus
+                if bonus:
+                    score += self.inst.B
 
         self.score = np.floor(score * 1000.0 / total_req)
 
