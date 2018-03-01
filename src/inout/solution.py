@@ -25,8 +25,22 @@ class Solution():
                     return True
         return False
 
-    def update_solution_score(updated_vhls):
-        self.score = 0
+    def compute_score_subset(self, trajet_subsets):
+        s = 0
+        for v_id, v_rides in trajet_subsets.items():
+            for r in v_rides:
+                # check if ride is valid
+                if self.is_valid(rd1, rd2):
+                    s += r.length
+                # check if bonus
+            s += get_trajet_bonus(self, rides)
+        return s
+
+    def update_solution_score(old_vhls_rides, new_vhls_rides):
+        old_score = compute_score_subset(old_vhls_rides)
+        new_score = compute_score_subset(new_vhls_rides)
+        self.score += new_score
+        self.score -= old_score
 
     def mutate(self, n=20):
         """
@@ -34,22 +48,29 @@ class Solution():
         enlève au hasard jusqu'a n trajets puis les remplace.
         Jusqu'à n trajets peuvent être mutés
         """
+        # keep trace of modifications
+        old_vhls_rides = {}
+
         # choisi n véhicules au hasard
         vhl_ids = random.sample(self.trajets.keys(), n)
-        n_mut = 0
-        # on leur enlève 1 trajet chacun au hasard, qu'on va remettre comme non done
-        random.choice(foo)
 
-        # on attribue aux n véhicules un nouveau trajet si possible
         for vhl_id in vhl_ids:
-            available_rides =
+            # on leur enlève 1 trajet chacun au hasard, qu'on va remettre comme non done
+            # a adapter
+            removed_ride_idx = random.randint(len(self.trajets[vhl_id]))
+            self.trajets[vhl_id][removed_ride_idx].done = False
+            self.trajets[vhl_id][removed_ride_idx].pop(removed_ride_idx)
+
+            # on attribue aux n véhicules un nouveau trajet si possible
+            available_rides = [r for r in self.inst.rides if r.done=False]
             available_rides = available_rides.shuffle
             for r in available_rides:
                 if check_insertion(vhl_id, r, inplace=True):
                     break
 
-                # update solution and scores
-                self.update_solution_score()
+            # update solution and scores
+            new_vhls_rides = dict(filter(lambda i:i[0] in validkeys, self.trajets.iteritems()))
+            self.update_solution_score(old_vhls_rides, new_vhls_rides)
 
     def is_valid(self, rd1, rd2):
         """
@@ -91,7 +112,6 @@ class Solution():
 
         return is_valid
 
-
     def compute_solution_score(self):
         s = 0
         for v_id, v_rides in self.trajets.items():
@@ -100,7 +120,7 @@ class Solution():
                 if self.is_valid(rd1, rd2):
                     s += r.length
                 # check if bonus
-            s += get_trajects_bonus(self, rides)
+            s += get_trajet_bonus(self, rides)
         self.score = s
 
     def write_solution(self, filepath):
