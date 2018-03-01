@@ -1,5 +1,5 @@
 from collections import namedtuple
-from util import get_ride_length
+from .util import get_ride_length
 
 Ride = namedtuple('Ride', ['id', 'a', 'b', 'x', 'y', 's', 'f', 'done', 'length'])
 
