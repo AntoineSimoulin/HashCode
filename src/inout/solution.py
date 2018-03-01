@@ -33,13 +33,12 @@ class Solution():
         self.videos_on_cache[i].append(choosen_v)
         self.compute_solution_score()
 
-
     def is_valid(self):
         """
         check total video size in each cache does not exceed limits
         """
         for _ci, _c in enumerate(self.videos_on_cache):
-            v_size = [v for _vi, _v in enumerate(inst.s_videos) if _vi in _ci]
+            v_size = [_v for _vi, _v in enumerate(self.inst.s_videos) if _vi in _ci]
             v_size_tot = sum(v_size)
             if _c.s_cache < v_size_tot:
                 return False

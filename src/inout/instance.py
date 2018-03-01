@@ -6,7 +6,8 @@ Endpoint = namedtuple('Endpoint', ['id', 'lat', 'con'])
 Request = namedtuple('Request', ['vid', 'eid', 'n'])
 Scoring = namedtuple('Scoring', ['vid', 'cid', 'score'])
 
-class Instance():
+
+class Instance:
     def __init__(self, fpath, name='instance'):
         self.fpath = fpath
         self.read_dataset()
