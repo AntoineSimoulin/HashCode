@@ -10,51 +10,20 @@ class Solution():
         self.trajets = {} # key : vehicle id, value : list of Rides
         self.score = 0 # self.compute_solution_score()
 
-    def check_insertion(self, rides, new_ride):
+    def check_insertion(self, vhl_id, new_ride, inplace=False):
         t=rides[0].a+rides[0].b
         pos_x = rides[0].a
         pos_y = rides[0].b
-        for ri, r in enumerates(rides):
+        for ri, r in enumerates(self.trajets[vhl_id]):
             # on a le temps d'aller jusqu'au ride suivant
             if can_take_ride(t, pos_x, pos_y, new_ride):
                 # check possible to finish the ride before taking the next one
-                ride_list = [new_ride] + rides[ri:]
-                if is_valid_rides_for_one_car(ride_list):
+                ride_list = [new_ride] + self.trajets[vhl_id][ri:]
+                if is_valid_rides_for_one_car(self.trajets[vhl_id]):
+                    if inplace:
+                        self.trajets[vhl_id].insert(new_ride.id)
                     return True
-
         return False
-
-    def mutate(self):
-        """
-        mutate solution given voisinage
-
-        """
-
-        # update solution and scores
-        self.trajets[i].append(choosen_v)
-        self.compute_solution_score()
-
-    def is_valid(self, rd1, rd2):
-        """
-        check total video size in each cache does not exceed limits
-        """
-        for _ci, _c in enumerate(self.videos_on_cache):
-            v_size = [_v for _vi, _v in enumerate(self.inst.s_videos) if _vi in _ci]
-            v_size_tot = sum(v_size)
-            if _c.s_cache < v_size_tot:
-                return False
-        return True
-
-    def get_trajects_bonus(self, rides):
-        t=rides[0].a+rides[0].b
-        res = 0
-        for ri, r in enumerate(rides):
-            if t == r.s:
-                res += self.inst.B
-            # add ride time and time to get to next tide
-            t += r.length
-            t += abs(rides[ri+1].a-r.x) + abs(rides[ri+1].b - r.y)
-        return res
 
     def is_valid_rides_for_one_car(self, rides_list):
         is_valid = True
@@ -74,17 +43,72 @@ class Solution():
 
         return is_valid
 
+    def update_solution_score(old_vhls_rides, new_vhls_rides):
+        old_score = compute_score_subset(old_vhls_rides)
+        new_score = compute_score_subset(new_vhls_rides)
+        self.score += new_score
+        self.score -= old_score
+
+    def mutate(self, n=20):
+        """
+        mutate solution given voisinage.
+        enlève au hasard jusqu'a n trajets puis les remplace.
+        Jusqu'à n trajets peuvent être mutés
+        """
+        # keep trace of modifications
+        old_vhls_rides = {}
+
+        # choisi n véhicules au hasard
+        vhl_ids = random.sample(self.trajets.keys(), n)
+
+        for vhl_id in vhl_ids:
+            # on leur enlève 1 trajet chacun au hasard, qu'on va remettre comme non done
+            # a adapter
+            removed_ride_idx = random.randint(len(self.trajets[vhl_id]))
+            self.trajets[vhl_id][removed_ride_idx].done = False
+            self.trajets[vhl_id][removed_ride_idx].pop(removed_ride_idx)
+
+            # on attribue aux n véhicules un nouveau trajet si possible
+            available_rides = [r for r in self.inst.rides if r.done=False]
+            available_rides = available_rides.shuffle
+            for r in available_rides:
+                if check_insertion(vhl_id, r, inplace=True):
+                    break
+
+            # update solution and scores
+            new_vhls_rides = dict(filter(lambda i:i[0] in validkeys, self.trajets.iteritems()))
+            self.update_solution_score(old_vhls_rides, new_vhls_rides)
+
+    def get_trajet_bonus(self, rides):
+        t=rides[0].a+rides[0].b
+        res = 0
+        for ri, r in enumerate(rides):
+            if t == r.s:
+                res += self.inst.B
+            # add ride time and time to get to next tide
+            t += r.length
+            t += abs(rides[ri+1].a-r.x) + abs(rides[ri+1].b - r.y)
+        return res
+
+    def compute_score_subset(self, trajet_subsets):
+        s = 0
+        for v_id, v_rides in trajet_subsets.items():
+            for r in v_rides:
+                # add ride length
+                s += r.length
+                # check if bonus
+            s += get_trajet_bonus(v_rides)
+        return s
 
     def compute_solution_score(self):
         s = 0
         for v_id, v_rides in self.trajets.items():
-            for r in rides:
-                # check if ride is valid
-                if self.is_valid(rd1, rd2):
-                    s += r.length
+            for r in v_rides:
+                # add ride length
+                s += r.length
                 # check if bonus
-            s += get_trajects_bonus(self, rides)
-        self.score = score
+            s += get_trajet_bonus(v_rides)
+        self.score = s
 
     def write_solution(self, filepath):
         # sort the traject solution
