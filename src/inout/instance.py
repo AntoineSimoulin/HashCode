@@ -1,5 +1,5 @@
 from collections import namedtuple
-Ride = namedtuple('Ride', ['id', 'a', 'b', 'x', 'y', 's', 'f'])
+Ride = namedtuple('Ride', ['id', 'a', 'b', 'x', 'y', 's', 'f', 'done'])
 
 class Instance:
     def __init__(self, fpath, name='instance'):
@@ -14,7 +14,7 @@ class Instance:
             self.rides = []
             for i in range(self.N):
                 a, b, x, y, s, f = [int(i) for i in dataset_file.readline().split(' ')]
-                self.rides.append(Ride(i, a, b, x, y, s, f))
+                self.rides.append(Ride(i, a, b, x, y, s, f, 0))
 
 
 if __name__ == "__main__":
@@ -28,4 +28,4 @@ if __name__ == "__main__":
     print(dataset.T)
     print(dataset.rides)
     for ride in dataset.rides:
-        print(ride.id, ' - ', ride.a, ride.b, ride.x, ride.y, ride.s, ride.f)
+        print(ride.id, ' - ', ride.a, ride.b, ride.x, ride.y, ride.s, ride.f, ' - ', ride.done)
