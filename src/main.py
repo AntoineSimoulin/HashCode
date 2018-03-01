@@ -53,8 +53,7 @@ def mark_ride_done(dataset, id):
             dataset.rides[i].done = 1
 
 
-if __name__ == "__main__":
-    dataset = Instance(PATH_TO_DATA)
+def get_first_basic_solution(dataset):
     # dataset.rides = sort_rides_by_starting_date(dataset.rides)
     solution = {}
     for car_index in range(dataset.F):
@@ -74,6 +73,12 @@ if __name__ == "__main__":
                 ride = first_ride
                 solution[car_index].append(ride.id)
                 mark_ride_done(dataset, ride.id)
+
+if __name__ == "__main__":
+    dataset = Instance(PATH_TO_DATA)
+    trajets = get_first_basic_solution(dataset)
+    solution = Solution(dataset)
+    solution.trajets = trajets
 
 
     # print(dataset.R)
