@@ -44,22 +44,27 @@ class Solution():
                 return False
         return True
 
-    def get_traject_time():
-        
+    def get_trajects_bonus(self, rides):
+        t=rides[0].a+rides[0].b
+        res = 0
+        for ri, r in enumerates(rides):
+            if t == r.s:
+                res += self.inst.B
+            # add ride time and time to get to next tide
+            t += r.length
+            t += abs(rides[ri+1].a-r.x) + abs(rides[ri+1].b - y)
+        return res
 
     def compute_solution_score(self):
-        score = 0.0
-
+        s = 0
         for v_id, v_rides in self.trajets.items():
             for r in rides:
                 # check if ride is valid
                 if self.is_valid(rd1, rd2):
-                    score += r.length
+                    s += r.length
                 # check if bonus
-                if bonus:
-                    score += self.inst.B
-
-        self.score = np.floor(score * 1000.0 / total_req)
+            s += get_trajects_bonus(self, rides)
+        self.score = score
 
     def write_solution(self, filepath):
         used_caches = 0
