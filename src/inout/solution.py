@@ -107,7 +107,7 @@ class Solution():
                 # cadd ride length
                 s += r.length
                 # check if bonus
-            s += get_trajet_bonus(self, rides)
+            s += get_trajet_bonus(rides)
         self.score = s
 
     def write_solution(self, filepath):
