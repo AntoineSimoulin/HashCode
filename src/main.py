@@ -70,9 +70,10 @@ def get_first_basic_solution(dataset):
             ride = assign_ride(current_time, pos_x, pos_y, dataset.rides)
             if ride is not None:
                 current_time, (pos_x, pos_y) = take_ride(current_time, pos_x, pos_y, ride)
-                ride = first_ride
                 solution[car_index].append(ride.id)
                 mark_ride_done(dataset, ride.id)
+
+    return solution
 
 if __name__ == "__main__":
     dataset = Instance(PATH_TO_DATA)
@@ -80,6 +81,7 @@ if __name__ == "__main__":
     solution = Solution(dataset)
     solution.trajets = trajets
 
+    print(trajets)
 
     # print(dataset.R)
     # print(dataset.C)
