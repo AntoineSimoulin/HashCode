@@ -10,29 +10,46 @@ class Solution():
         self.trajets = {} # key : vehicle id, value : list of Rides
         self.score = 0 # self.compute_solution_score()
 
-    def check_insertion(self, rides, new_ride):
+    def check_insertion(self, vhl_id, new_ride, inplace=False):
         t=rides[0].a+rides[0].b
         pos_x = rides[0].a
         pos_y = rides[0].b
-        for ri, r in enumerates(rides):
+        for ri, r in enumerates(self.trajets[vhl_id]):
             # on a le temps d'aller jusqu'au ride suivant
             if can_take_ride(t, pos_x, pos_y, new_ride):
                 # check possible to finish the ride before taking the next one
-                ride_list = [new_ride] + rides[ri:]
-                if is_valid_rides_for_one_car(ride_list):
+                ride_list = [new_ride] + self.trajets[vhl_id][ri:]
+                if is_valid_rides_for_one_car(self.trajets[vhl_id]):
+                    if inplace:
+                        self.trajets[vhl_id].insert(new_ride.id)
                     return True
-
         return False
 
-    def mutate(self):
-        """
-        mutate solution given voisinage
+    def update_solution_score(updated_vhls):
+        self.score = 0
 
+    def mutate(self, n=20):
         """
+        mutate solution given voisinage.
+        enlève au hasard jusqu'a n trajets puis les remplace.
+        Jusqu'à n trajets peuvent être mutés
+        """
+        # choisi n véhicules au hasard
+        vhl_ids = random.sample(self.trajets.keys(), n)
+        n_mut = 0
+        # on leur enlève 1 trajet chacun au hasard, qu'on va remettre comme non done
+        random.choice(foo)
 
-        # update solution and scores
-        self.trajets[i].append(choosen_v)
-        self.compute_solution_score()
+        # on attribue aux n véhicules un nouveau trajet si possible
+        for vhl_id in vhl_ids:
+            available_rides =
+            available_rides = available_rides.shuffle
+            for r in available_rides:
+                if check_insertion(vhl_id, r, inplace=True):
+                    break
+
+                # update solution and scores
+                self.update_solution_score()
 
     def is_valid(self, rd1, rd2):
         """
@@ -45,7 +62,7 @@ class Solution():
                 return False
         return True
 
-    def get_trajects_bonus(self, rides):
+    def get_trajet_bonus(self, rides):
         t=rides[0].a+rides[0].b
         res = 0
         for ri, r in enumerate(rides):
@@ -84,7 +101,7 @@ class Solution():
                     s += r.length
                 # check if bonus
             s += get_trajects_bonus(self, rides)
-        self.score = score
+        self.score = s
 
     def write_solution(self, filepath):
         # sort the traject solution
