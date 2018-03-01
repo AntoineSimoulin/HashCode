@@ -25,16 +25,23 @@ class Solution():
                     return True
         return False
 
-    def compute_score_subset(self, trajet_subsets):
-        s = 0
-        for v_id, v_rides in trajet_subsets.items():
-            for r in v_rides:
-                # check if ride is valid
-                if self.is_valid(rd1, rd2):
-                    s += r.length
-                # check if bonus
-            s += get_trajet_bonus(self, rides)
-        return s
+    def is_valid_rides_for_one_car(self, rides_list):
+        is_valid = True
+        pos_x, pos_y = 0, 0
+        current_time = 0
+        for ride in rides_list:
+            # Go to position of start
+            current_time, (pos_x, pos_y) = move_to(current_time, pos_x, pos_y, ride.a, ride.b)
+            # Check that current time is after starting_time
+            if current_time < ride.s:
+                is_valid = False
+            # Go to destination
+            current_time, (pos_x, pos_y) = move_to(current_time, pos_x, pos_y, ride.x, ride.y)
+            # Check that end time is before finish
+            if current_time >= ride.f:
+                is_valid = False
+
+        return is_valid
 
     def update_solution_score(old_vhls_rides, new_vhls_rides):
         old_score = compute_score_subset(old_vhls_rides)
@@ -72,17 +79,6 @@ class Solution():
             new_vhls_rides = dict(filter(lambda i:i[0] in validkeys, self.trajets.iteritems()))
             self.update_solution_score(old_vhls_rides, new_vhls_rides)
 
-    def is_valid(self, rd1, rd2):
-        """
-        check total video size in each cache does not exceed limits
-        """
-        for _ci, _c in enumerate(self.videos_on_cache):
-            v_size = [_v for _vi, _v in enumerate(self.inst.s_videos) if _vi in _ci]
-            v_size_tot = sum(v_size)
-            if _c.s_cache < v_size_tot:
-                return False
-        return True
-
     def get_trajet_bonus(self, rides):
         t=rides[0].a+rides[0].b
         res = 0
@@ -94,31 +90,22 @@ class Solution():
             t += abs(rides[ri+1].a-r.x) + abs(rides[ri+1].b - r.y)
         return res
 
-    def is_valid_rides_for_one_car(self, rides_list):
-        is_valid = True
-        pos_x, pos_y = 0, 0
-        current_time = 0
-        for ride in rides_list:
-            # Go to position of start
-            current_time, (pos_x, pos_y) = move_to(current_time, pos_x, pos_y, ride.a, ride.b)
-            # Check that current time is after starting_time
-            if current_time < ride.s:
-                is_valid = False
-            # Go to destination
-            current_time, (pos_x, pos_y) = move_to(current_time, pos_x, pos_y, ride.x, ride.y)
-            # Check that end time is before finish
-            if current_time >= ride.f:
-                is_valid = False
-
-        return is_valid
+        def compute_score_subset(self, trajet_subsets):
+            s = 0
+            for v_id, v_rides in trajet_subsets.items():
+                for r in v_rides:
+                    # add ride length
+                    s += r.length
+                    # check if bonus
+                s += get_trajet_bonus(v_rides)
+            return s
 
     def compute_solution_score(self):
         s = 0
         for v_id, v_rides in self.trajets.items():
             for r in rides:
-                # check if ride is valid
-                if self.is_valid(rd1, rd2):
-                    s += r.length
+                # cadd ride length
+                s += r.length
                 # check if bonus
             s += get_trajet_bonus(self, rides)
         self.score = s
