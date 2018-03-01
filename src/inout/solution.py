@@ -56,6 +56,25 @@ class Solution():
             t += abs(rides[ri+1].a-r.x) + abs(rides[ri+1].b - y)
         return res
 
+    def is_valid_rides_for_one_car(self, rides_list):
+        is_valid = True
+        pos_x, pos_y = 0, 0
+        current_time = 0
+        for ride in rides_list:
+            # Go to position of start
+            current_time, (pos_x, pos_y) = move_to(current_time, ride.a, ride.b)
+            # Check that current time is after starting_time
+            if current_time < ride.s:
+                is_valid = False
+            # Go to destination
+            current_time, (pos_x, pos_y) = move_to(current_time, ride.x, ride.y)
+            # Check that end time is before finish
+            if current_time >= ride.f:
+                is_valid = False
+
+        return is_valid
+
+
     def compute_solution_score(self):
         s = 0
         for v_id, v_rides in self.trajets.items():
