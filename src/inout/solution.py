@@ -1,6 +1,7 @@
 from tqdm import tqdm
 import numpy as np
 import random
+from util import get_ride_length, move_to
 
 class Solution():
     def __init__(self, inst):
