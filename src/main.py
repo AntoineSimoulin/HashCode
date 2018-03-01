@@ -4,9 +4,6 @@ from solver import simulated_annealing
 from operator import itemgetter
 
 
-PATH_TO_DATA = "../data/b_should_be_easy.in"
-
-
 def reduce_to_undone_rides(rides):
     undone_rides = [ride for ride in rides if not ride.done]
     return undone_rides
@@ -64,35 +61,34 @@ def get_first_basic_solution(dataset):
         if first_ride is not None:
             current_time, (pos_x, pos_y) = take_ride(current_time, pos_x, pos_y, first_ride)
             ride = first_ride
-            solution[car_index].append(ride.id)
+            solution[car_index].append(ride)
             mark_ride_done(dataset, ride.id)
         while ride is not None:
             ride = assign_ride(current_time, pos_x, pos_y, dataset.rides)
             if ride is not None:
                 current_time, (pos_x, pos_y) = take_ride(current_time, pos_x, pos_y, ride)
-                solution[car_index].append(ride.id)
+                solution[car_index].append(ride)
                 mark_ride_done(dataset, ride.id)
 
     return solution
 
-if __name__ == "__main__":
+def output_solution(name):
+    PATH_TO_DATA = '../data/' + name + ".in"
+    OUTPUT_FILE = name + ".out"
     dataset = Instance(PATH_TO_DATA)
     trajets = get_first_basic_solution(dataset)
     solution = Solution(dataset)
     solution.trajets = trajets
 
-    print(trajets)
+    solution.write_solution(OUTPUT_FILE)
 
-    # print(dataset.R)
-    # print(dataset.C)
-    # print(dataset.F)
-    # print(dataset.N)
-    # print(dataset.B)
-    # print(dataset.T)
-    # print(dataset.rides)
-    # for ride in dataset.rides:
-    #     print(ride.id, ' - ', ride.a, ride.b, ride.x, ride.y, ride.s, ride.f, ' - ', ride.done, ' - ', ride.length)
 
-    # Access the dataset variables by :
-    # dataset.R, dataset.C, dataset.F, dataset.N, dataset.B, dataset.T, dataset.rides
-    # dataset.rides is a dict with keys: id, a, b, x, y, s, f
+def output_all_solutions():
+    names = ['a_example', 'b_should_be_easy', 'c_no_hurry', 'd_metropolis', 'e_high_bonus']
+    for name in names:
+        print('Doing ' + name)
+        output_solution(name)
+
+
+if __name__ == "__main__":
+    output_all_solutions()
