@@ -90,24 +90,24 @@ class Solution():
             t += abs(rides[ri+1].a-r.x) + abs(rides[ri+1].b - r.y)
         return res
 
-        def compute_score_subset(self, trajet_subsets):
-            s = 0
-            for v_id, v_rides in trajet_subsets.items():
-                for r in v_rides:
-                    # add ride length
-                    s += r.length
-                    # check if bonus
-                s += get_trajet_bonus(v_rides)
-            return s
+    def compute_score_subset(self, trajet_subsets):
+        s = 0
+        for v_id, v_rides in trajet_subsets.items():
+            for r in v_rides:
+                # add ride length
+                s += r.length
+                # check if bonus
+            s += get_trajet_bonus(v_rides)
+        return s
 
     def compute_solution_score(self):
         s = 0
         for v_id, v_rides in self.trajets.items():
-            for r in rides:
-                # cadd ride length
+            for r in v_rides:
+                # add ride length
                 s += r.length
                 # check if bonus
-            s += get_trajet_bonus(rides)
+            s += get_trajet_bonus(v_rides)
         self.score = s
 
     def write_solution(self, filepath):
