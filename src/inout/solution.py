@@ -79,12 +79,12 @@ class Solution():
         current_time = 0
         for ride in rides_list:
             # Go to position of start
-            current_time, (pos_x, pos_y) = move_to(current_time, ride.a, ride.b)
+            current_time, (pos_x, pos_y) = move_to(current_time, pos_x, pos_y, ride.a, ride.b)
             # Check that current time is after starting_time
             if current_time < ride.s:
                 is_valid = False
             # Go to destination
-            current_time, (pos_x, pos_y) = move_to(current_time, ride.x, ride.y)
+            current_time, (pos_x, pos_y) = move_to(current_time, pos_x, pos_y, ride.x, ride.y)
             # Check that end time is before finish
             if current_time >= ride.f:
                 is_valid = False
