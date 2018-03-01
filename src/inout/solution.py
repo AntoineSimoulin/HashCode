@@ -18,7 +18,7 @@ class Solution():
             # on a le temps d'aller jusqu'au ride suivant
             if can_take_ride(t, pos_x, pos_y, new_ride):
                 # check possible to finish the ride before taking the next one
-                ride_list = [new_ride, rides[ri:]]
+                ride_list = [new_ride] + rides[ri:]
                 if is_valid_rides_for_one_car(ride_list):
                     return True
 
